@@ -1,0 +1,25 @@
+{
+  "compatibleVersion": 3,
+  "bundleVersion": 1,
+  "icon": "icon.png",
+  "scope": "application",
+  "commands": [
+    {
+      "name": "💬 Sketch Chat",
+      "identifier": "sketch-chat.command-identifier",
+      "script": "./my-command.js",
+      "handlers": {
+        "run": "onRun",
+        "actions": {
+          "Startup": "onStartup",
+          "Shutdown": "onShutdown",
+          "OpenDocument": "onOpenDocument"
+        }
+      }
+    }
+  ],
+  "menu": {
+    "isRoot": true,
+    "items": ["sketch-chat.command-identifier"]
+  }
+}

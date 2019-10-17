@@ -1,0 +1,46 @@
+{
+  "name": "lona-backend",
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/api.ts",
+  "scripts": {
+    "lint": "find . -name \"*.js\" | grep -v -f .gitignore | xargs eslint",
+    "prettier:base": "prettier --write",
+    "prettify": "find . -name \"*.js\" | grep -v -f .gitignore | xargs npm run prettier:base",
+    "deploy:dev": "serverless deploy -s dev",
+    "deploy:prod": "serverless deploy -s production",
+    "logs": "serverless logs -f docsQueueWorker -t"
+  },
+  "dependencies": {
+    "@creditkarma/memcached": "^1.1.0",
+    "aws-apigatewaymanagementapi": "^0.1.0",
+    "node-fetch": "^2.6.0",
+    "randomstring": "^1.1.5",
+    "source-map-support": "^0.5.13"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.31",
+    "@types/node": "^10.0.0",
+    "@types/node-fetch": "^2.5.0",
+    "@types/randomstring": "^1.1.6",
+    "aws-sdk": "^2.517.0",
+    "copy-webpack-plugin": "^5.0.4",
+    "eslint": "^6.2.2",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^6.1.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-prettier": "^3.1.0",
+    "prettier": "^1.18.2",
+    "serverless-webpack": "^5.3.1",
+    "ts-loader": "^6.0.4",
+    "typescript": "^3.5.3",
+    "webpack": "^4.39.2"
+  },
+  "prettier": {
+    "proseWrap": "never",
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "semi": false
+  }
+}
