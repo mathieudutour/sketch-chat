@@ -1,7 +1,7 @@
 {
   "name": "sketch-chat",
   "description": "A Sketch plugin to chat in Sketch Cloud files",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "engines": {
     "sketch": ">=3.0"
   },
