@@ -17,9 +17,9 @@ console.log('http server listening on %d', port)
 var wss = new Server({ server: server })
 console.log('websocket server created')
 
-wss.on('connection', async ws => {
+wss.on('connection', async (ws, req) => {
   const connectionID = randomString.generate()
-  const query = new URL(ws.url).searchParams
+  const query = new URL(req.url).searchParams
   const name = query.get('name')
   const avatar = query.get('avatar')
 
