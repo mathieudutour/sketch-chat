@@ -120,6 +120,8 @@ function Settings(props) {
   );
 }
 
+const roomsToConnectTo = [];
+
 const init = (SERVER_URL = DEFAULT_SERVER_URL, CLOUD_USER = undefined) => {
   const socket =
     CLOUD_USER &&
@@ -138,9 +140,9 @@ const init = (SERVER_URL = DEFAULT_SERVER_URL, CLOUD_USER = undefined) => {
             <br />
             <button
               className="button button--secondary"
-              onClick={() => init(SERVER_URL, CLOUD_USER)}
+              onClick={() => window.postMessage("sign-in-sketch-cloud")}
             >
-              retry
+              sign in
             </button>
           </div>
         </div>
@@ -178,6 +180,7 @@ const init = (SERVER_URL = DEFAULT_SERVER_URL, CLOUD_USER = undefined) => {
 
       if (textMessage || selection) {
         const data = {
+          action: "message",
           text: textMessage,
           room: roomName,
           id: randomstring.generate()
@@ -210,7 +213,12 @@ const init = (SERVER_URL = DEFAULT_SERVER_URL, CLOUD_USER = undefined) => {
 
     // @ts-ignore
     window.onOpenDocument = doc => {
-      setRoomName(doc);
+      roomsToConnectTo.push(doc);
+      if (socket.readyState === socket.CONNECTED) {
+        socket.send(JSON.stringify({ action: "join-room", room: doc.id }));
+      }
+
+      setRoomName(doc.id);
     };
 
     function appendMessage(messages, messageData, sender = false) {
@@ -240,8 +248,9 @@ const init = (SERVER_URL = DEFAULT_SERVER_URL, CLOUD_USER = undefined) => {
 
     React.useEffect(() => {
       socket.onmessage = ({ data }) => {
+        console.log(data);
         const parsed = JSON.parse(data);
-        if (parsed.isMessage) {
+        if (parsed.type === "message") {
           appendMessage(messages, parsed);
         }
       };
@@ -262,8 +271,16 @@ const init = (SERVER_URL = DEFAULT_SERVER_URL, CLOUD_USER = undefined) => {
     }, []);
 
     React.useEffect(() => {
-      socket.onopen = () => setConnection(ConnectionEnum.CONNECTED);
-      socket.onerror = () => setConnection(ConnectionEnum.ERROR);
+      socket.onopen = () => {
+        roomsToConnectTo.forEach(doc =>
+          socket.send(JSON.stringify({ action: "join-room", room: doc.id }))
+        );
+        setConnection(ConnectionEnum.CONNECTED);
+      };
+      socket.onerror = err => {
+        console.error(err);
+        setConnection(ConnectionEnum.ERROR);
+      };
 
       return () => {
         socket.onopen = undefined;

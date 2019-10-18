@@ -1,45 +1,79 @@
-import { _handler } from './_handler'
-import { removeUser, getUser, getRoom } from './storage'
+import { Server } from 'ws'
+import http from 'http'
+import { URL } from 'url'
+import express from 'express'
+import randomString from 'randomstring'
+import { removeUser, getUser, getRoom, addUserToRoom } from './storage'
 import { sendMessage } from './sent-message'
 
-export const connectionHandler = _handler(async event => {
-  const { name, avatar } = event.queryStringParameters
-  const connectionID = event.requestContext.connectionId
+const app = express()
+const port = process.env.PORT || 5000
 
-  await getUser({ connectionID, name, avatar })
+var server = http.createServer(app)
+server.listen(port)
 
-  return {
-    message: 'ok',
-  }
-})
+console.log('http server listening on %d', port)
 
-export const defaultHandler = _handler(async event => {
-  const connectionID = event.requestContext.connectionId
-  const user = await getUser({ connectionID })
-  const body = JSON.parse(event.body || '{}')
+var wss = new Server({ server: server })
+console.log('websocket server created')
 
-  body.user = {
-    name: user.name,
-    avatar: user.avatar,
-  }
-  body.isMessage = true
+wss.on('connection', async ws => {
+  const connectionID = randomString.generate()
+  const query = new URL(ws.url).searchParams
+  const name = query.get('name')
+  const avatar = query.get('avatar')
 
-  const room = await getRoom(body.room)
+  getUser({ connectionID, ws, name, avatar })
 
-  await Promise.all(
+  console.log('websocket connection open')
+
+  ws.on('message', data => {
+    const user = getUser({ connectionID })
+    const body = JSON.parse(String(data) || '{}')
+    console.log(body)
+    if (body.action === 'join-room') {
+      const room = addUserToRoom(user, body.room)
+
+      room.users
+        .filter(x => x !== connectionID)
+        .forEach(x =>
+          sendMessage(x, {
+            type: 'user-join',
+            room: body.room,
+            user: { name: user.name, avatar: user.avatar },
+          })
+        )
+
+      return
+    }
+
+    body.user = {
+      name: user.name,
+      avatar: user.avatar,
+    }
+    body.type = 'message'
+
+    const room = getRoom(body.room)
+
     room.users
-      .filter(x => x !== connectionID)
-      .map(x => sendMessage(event, x, body))
-  )
+      // .filter(x => x !== connectionID)
+      .forEach(x => sendMessage(x, body))
+  })
 
-  return {
-    message: 'ok',
-  }
-})
+  ws.on('close', () => {
+    const user = getUser({ connectionID })
+    const rooms = removeUser(connectionID)
 
-export const disconnectionHandler = _handler(async event => {
-  await removeUser(event.requestContext.connectionId)
-  return {
-    message: 'ok',
-  }
+    rooms.forEach(room =>
+      room.users
+        .filter(x => x !== connectionID)
+        .map(x =>
+          sendMessage(x, {
+            type: 'user-left',
+            room: room.id,
+            user: { name: user.name, avatar: user.avatar },
+          })
+        )
+    )
+  })
 })

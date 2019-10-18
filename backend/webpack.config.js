@@ -1,15 +1,8 @@
 const path = require('path')
-const slsw = require('serverless-webpack')
-
-const entries = {}
-
-Object.keys(slsw.lib.entries).forEach(key => {
-  entries[key] = ['./source-map-install.js', slsw.lib.entries[key]]
-})
 
 module.exports = {
-  mode: slsw.lib.webpack.isLocal ? 'development' : 'production',
-  entry: entries,
+  mode: 'production',
+  entry: path.join(__dirname, './lib/handler.ts'),
   devtool: 'source-map',
   resolve: {
     extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
@@ -28,7 +21,7 @@ module.exports = {
   },
   externals: [
     (context, request, callback) => {
-      if (/^aws-sdk/.test(request)) {
+      if (request === 'express' || request === 'ws' || request === 'randomstring' || request === 'http' || request === 'url') {
         // aws-sdk is provided by default so we don't have to bundle it
         return callback(null, `commonjs ${request}`)
       }

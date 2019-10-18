@@ -1,24 +1,9 @@
-import { APIGatewayProxyEvent } from 'aws-lambda'
-import ensureApiGatewayManagementApi from 'aws-apigatewaymanagementapi'
-import * as AWS from 'aws-sdk'
+import { getUser } from './storage'
 
-ensureApiGatewayManagementApi(AWS)
-
-export const sendMessage = async (
-  event: APIGatewayProxyEvent,
-  connectionId: string,
-  message: string
-) => {
-  const apigwManagementApi = new AWS.ApiGatewayManagementApi({
-    apiVersion: '2018-11-29',
-    endpoint:
-      event.requestContext.domainName + '/' + event.requestContext.stage,
-  })
-
-  await apigwManagementApi
-    .postToConnection({
-      ConnectionId: connectionId,
-      Data: JSON.stringify(message),
-    })
-    .promise()
+export const sendMessage = (connectionID: string, message: any) => {
+  const user = getUser({ connectionID })
+  if (!user.ws) {
+    return
+  }
+  user.ws.send(JSON.stringify(message))
 }

@@ -32,7 +32,9 @@ export function onOpenDocument() {
     }
     sendToWebview(
       webviewIdentifier,
-      `onOpenDocument("${doc.sketchObject.cloudShare().shortID()}")`
+      `onOpenDocument(${JSON.stringify({
+        id: String(doc.sketchObject.cloudShare().shortID())
+      })})`
     );
   }, 100);
 }
@@ -78,6 +80,10 @@ export function onStartup() {
   browserWindow.on("close", event => {
     event.preventDefault();
     browserWindow.hide();
+  });
+
+  browserWindow.webContents.on("sign-in-sketch-cloud", () => {
+    MSCloudAction.signIn();
   });
 
   const threadDic = NSThread.mainThread().threadDictionary();

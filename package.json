@@ -18,7 +18,8 @@
     "build": "skpm-build",
     "watch": "skpm-build --watch",
     "start": "skpm-build --watch",
-    "postinstall": "npm run build && skpm-link"
+    "postinstall": "npm run build && skpm-link",
+    "heroku-postbuild": "cd backend && npm install"
   },
   "devDependencies": {
     "@skpm/builder": "^0.7.4",

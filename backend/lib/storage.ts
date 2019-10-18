@@ -1,9 +1,16 @@
-import { MemcachedClient } from '@creditkarma/memcached'
+import WebSocket from 'ws'
 
-const cache = new MemcachedClient(process.env.REDIS_HOST)
+const cache: {
+  rooms: { [name: string]: Room }
+  users: { [id: string]: User }
+} = {
+  rooms: {},
+  users: {},
+}
 
 export type User = {
   connectionID: string
+  ws?: WebSocket
   name?: string
   avatar?: string
   rooms: string[]
@@ -15,56 +22,68 @@ export type Room = {
   users: string[]
 }
 
-export const getRoom = (room: string): Promise<Room> => {
-  return cache.getWithDefault(room, { id: room, users: [] })
+export const getRoom = (room: string): Room => {
+  const existingRoom = cache.rooms[room]
+  if (existingRoom) {
+    return existingRoom
+  }
+  cache.rooms[room] = {
+    id: room,
+    users: [],
+  }
+  return cache.rooms[room]
 }
 
 export const getUser = (user: {
+  ws?: WebSocket
   connectionID: string
   name?: string
   avatar?: string
-}) => {
-  return cache.getWithDefault(user.connectionID, {
+}): User => {
+  const existingUser = cache.users[user.connectionID]
+  if (existingUser) {
+    return existingUser
+  }
+  cache.users[user.connectionID] = {
     connectionID: user.connectionID,
+    ws: user.ws,
     name: user.name,
     avatar: user.avatar,
     rooms: [],
-  })
+  }
+  return cache.users[user.connectionID]
 }
 
-export const addUserToRoom = async (
-  user: {
-    connectionID: string
-    name?: string
-    avatar?: string
-  },
-  room: string
-) => {
+export const addUserToRoom = (user: User, room: string) => {
   if (!room) {
     return
   }
 
-  const existingRoom = await getRoom(room)
-  const existingUser = await getUser(user)
+  const existingRoom = getRoom(room)
+  const existingUser = getUser(user)
 
-  existingRoom.users.push(user.connectionID)
-  existingUser.rooms.push(room)
+  const users = new Set(existingRoom.users)
+  users.add(user.connectionID)
+  existingRoom.users = Array.from(users)
+  const rooms = new Set(existingUser.rooms)
+  rooms.add(room)
+  existingUser.rooms = Array.from(rooms)
 
-  return Promise.all([
-    cache.set(room, existingRoom),
-    cache.set(user.connectionID, existingUser),
-  ])
+  cache.rooms[room] = existingRoom
+  cache.users[user.connectionID] = existingUser
+
+  return existingRoom
 }
 
-export const removeUser = async (connectionID: string) => {
-  const existingUser = await getUser({ connectionID })
+export const removeUser = (connectionID: string) => {
+  const existingUser = getUser({ connectionID })
 
-  const rooms = await Promise.all(existingUser.rooms.map(r => getRoom(r)))
+  const rooms = existingUser.rooms.map(r => getRoom(r))
 
-  return Promise.all(
-    rooms.map(r => {
-      r.users = r.users.filter(x => x !== connectionID)
-      cache.set(r.id, r)
-    })
-  )
+  rooms.forEach(r => {
+    r.users = r.users.filter(x => x !== connectionID)
+    cache.rooms[r.id] = r
+  })
+
+  return rooms
 }
