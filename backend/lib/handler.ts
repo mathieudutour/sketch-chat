@@ -1,5 +1,4 @@
 import { Server } from 'ws'
-import http from 'http'
 import { URL } from 'url'
 import express from 'express'
 import randomString from 'randomstring'
