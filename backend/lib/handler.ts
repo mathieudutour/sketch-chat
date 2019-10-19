@@ -6,13 +6,11 @@ import randomString from 'randomstring'
 import { removeUser, getUser, getRoom, addUserToRoom } from './storage'
 import { sendMessage } from './sent-message'
 
-const app = express()
-const port = process.env.PORT || 5000
+const PORT = process.env.PORT || 3000
 
-var server = http.createServer(app)
-server.listen(port)
-
-console.log('http server listening on %d', port)
+const server = express()
+  .use((_req, res) => res.send(`Sketch Chat`))
+  .listen(PORT, () => console.log(`Listening on ${PORT}`))
 
 var wss = new Server({ server: server })
 console.log('websocket server created')
