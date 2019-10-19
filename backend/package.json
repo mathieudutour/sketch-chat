@@ -1,5 +1,5 @@
 {
-  "name": "lona-backend",
+  "name": "sketch-chat-backend",
   "private": true,
   "version": "1.0.0",
   "description": "",
@@ -8,7 +8,7 @@
     "lint": "find . -name \"*.js\" | grep -v -f .gitignore | xargs eslint",
     "prettier:base": "prettier --write",
     "prettify": "find . -name \"*.js\" | grep -v -f .gitignore | xargs npm run prettier:base",
-    "build": "webpack"
+    "build": "ls node_modules && webpack"
   },
   "dependencies": {
     "express": "^4.17.1",
