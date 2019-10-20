@@ -9,6 +9,7 @@ const cache: {
 }
 
 export type User = {
+  isAlive: boolean
   connectionID: string
   ws?: WebSocket
   name?: string
@@ -45,6 +46,7 @@ export const getUser = (user: {
     return existingUser
   }
   cache.users[user.connectionID] = {
+    isAlive: true,
     connectionID: user.connectionID,
     ws: user.ws,
     name: user.name,
@@ -52,6 +54,21 @@ export const getUser = (user: {
     rooms: [],
   }
   return cache.users[user.connectionID]
+}
+
+export const getUserByWs = (ws: WebSocket): User => {
+  return Object.values(cache.users).find(x => x.ws === ws)
+}
+
+export const userIsAlive = (connectionID: string, alive: boolean = true) => {
+  const existingUser = cache.users[connectionID]
+  if (!existingUser) {
+    return
+  }
+  cache.users[connectionID] = {
+    isAlive: alive,
+    ...existingUser,
+  }
 }
 
 export const addUserToRoom = (user: User, room: string) => {

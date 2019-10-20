@@ -2,7 +2,14 @@ import { Server } from 'ws'
 import querystring from 'querystring'
 import express from 'express'
 import randomString from 'randomstring'
-import { removeUser, getUser, getRoom, addUserToRoom } from './storage'
+import {
+  removeUser,
+  getUser,
+  getRoom,
+  addUserToRoom,
+  userIsAlive,
+  getUserByWs,
+} from './storage'
 import { sendMessage } from './sent-message'
 
 const PORT = process.env.PORT || 3000
@@ -26,10 +33,12 @@ wss.on('connection', async (ws, req) => {
 
   console.log('websocket connection open')
 
+  ws.on('pong', () => userIsAlive(connectionID))
+
   ws.on('message', data => {
     const user = getUser({ connectionID })
     const body = JSON.parse(String(data) || '{}')
-    console.log(body)
+
     if (body.action === 'join-room') {
       const room = addUserToRoom(user, body.room)
 
@@ -55,7 +64,7 @@ wss.on('connection', async (ws, req) => {
     const room = getRoom(body.room)
 
     room.users
-      // .filter(x => x !== connectionID)
+      .filter(x => x !== connectionID)
       .forEach(x => sendMessage(x, body))
   })
 
@@ -76,3 +85,17 @@ wss.on('connection', async (ws, req) => {
     )
   })
 })
+
+setInterval(function ping() {
+  wss.clients.forEach(ws => {
+    const user = getUserByWs(ws)
+    if (!user || user.isAlive === false) return ws.terminate()
+
+    if (!user) {
+      return
+    }
+
+    userIsAlive(user.connectionID, false)
+    ws.ping()
+  })
+}, 30000)
