@@ -14,7 +14,10 @@ export default function(context) {
       existingWebview.show();
     }
   } else {
-    onStartup().show();
+    const browserWindow = onStartup();
+    browserWindow.once("ready-to-show", () => {
+      browserWindow.show();
+    });
   }
 }
 
@@ -32,9 +35,7 @@ export function onOpenDocument() {
     }
     sendToWebview(
       webviewIdentifier,
-      `onOpenDocument(${JSON.stringify({
-        id: String(doc.sketchObject.cloudShare().shortID())
-      })})`
+      `onOpenDocument("${String(doc.sketchObject.cloudShare().shortID())}")`
     );
   }, 100);
 }
@@ -127,23 +128,50 @@ export function onStartup() {
   );
 
   const delegate = new MochaJSDelegate({
+    "onCurrentDocumentChanged:": () => {
+      const doc = getSelectedDocument();
+      if (
+        doc &&
+        doc.sketchObject.cloudShare &&
+        doc.sketchObject.cloudShare() &&
+        doc.sketchObject.cloudShare().shortID()
+      ) {
+        browserWindow.webContents.executeJavaScript(
+          `onCurrentDocumentChanged && onCurrentDocumentChanged("${String(
+            doc.sketchObject.cloudShare().shortID()
+          )}")`
+        );
+      }
+    },
     "onCloudUserChanged:": () => {
       const user = cloudUser();
+      console.log(user);
       browserWindow.webContents.insertJS(
         `window.CLOUD_USER = ${JSON.stringify(user)}`
       );
       browserWindow.webContents.executeJavaScript(
-        `onCloudUserChanged(${JSON.stringify(user)})`
+        `onCloudUserChanged && onCloudUserChanged(${JSON.stringify(user)})`
       );
     }
   }).getClassInstance();
 
-  const sel = NSSelectorFromString("onCloudUserChanged:");
+  const onCloudUserChanged = NSSelectorFromString("onCloudUserChanged:");
 
   NSNotificationCenter.defaultCenter().addObserver_selector_name_object(
     delegate,
-    sel,
+    onCloudUserChanged,
     SCKUserController.userDidChangeNotification(),
+    null
+  );
+
+  const onCurrentDocumentChanged = NSSelectorFromString(
+    "onCurrentDocumentChanged:"
+  );
+
+  NSNotificationCenter.defaultCenter().addObserver_selector_name_object(
+    delegate,
+    onCurrentDocumentChanged,
+    NSWindowDidBecomeKeyNotification,
     null
   );
 
@@ -159,7 +187,9 @@ export function onStartup() {
     doc.sketchObject.cloudShare().shortID()
   ) {
     browserWindow.webContents.executeJavaScript(
-      `onOpenDocument("${doc.sketchObject.cloudShare().shortID()}")`
+      `onOpenDocument && onOpenDocument("${String(
+        doc.sketchObject.cloudShare().shortID()
+      )}")`
     );
   }
 

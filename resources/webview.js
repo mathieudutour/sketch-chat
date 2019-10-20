@@ -2,8 +2,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as randomstring from "randomstring";
 
-const DEFAULT_SERVER_URL =
-  "wss://052357ge8i.execute-api.eu-west-1.amazonaws.com/dev";
+const DEFAULT_SERVER_URL = "ws://sketch-chat.herokuapp.com/";
 
 const ConnectionEnum = {
   NONE: "NONE",
@@ -122,6 +121,22 @@ function Settings(props) {
 
 const roomsToConnectTo = [];
 
+window.onOpenDocument = doc => {
+  roomsToConnectTo.push(doc);
+};
+
+function heartbeat() {
+  clearTimeout(this.pingTimeout);
+
+  // Use `WebSocket#terminate()`, which immediately destroys the connection,
+  // instead of `WebSocket#close()`, which waits for the close timer.
+  // Delay should be equal to the interval at which your server
+  // sends out pings plus a conservative assumption of the latency.
+  this.pingTimeout = setTimeout(() => {
+    this.terminate();
+  }, 30000 + 1000);
+}
+
 const init = (SERVER_URL = DEFAULT_SERVER_URL, CLOUD_USER = undefined) => {
   const socket =
     CLOUD_USER &&
@@ -130,6 +145,15 @@ const init = (SERVER_URL = DEFAULT_SERVER_URL, CLOUD_USER = undefined) => {
         (CLOUD_USER || {}).name
       )}&avatar=${encodeURIComponent((CLOUD_USER || {}).avatar)}`
     );
+
+  // if (socket) {
+  //   socket.
+  //   socket.on("open", heartbeat);
+  //   socket.on("ping", heartbeat);
+  //   socket.on("close", function clear() {
+  //     clearTimeout(this.pingTimeout);
+  //   });
+  // }
 
   const App = () => {
     if (!CLOUD_USER) {
@@ -199,9 +223,7 @@ const init = (SERVER_URL = DEFAULT_SERVER_URL, CLOUD_USER = undefined) => {
         appendMessage(
           messages,
           {
-            id: data.id,
-            room: data.room,
-            message,
+            ...data,
             user: CLOUD_USER
           },
           true
@@ -214,23 +236,26 @@ const init = (SERVER_URL = DEFAULT_SERVER_URL, CLOUD_USER = undefined) => {
     // @ts-ignore
     window.onOpenDocument = doc => {
       roomsToConnectTo.push(doc);
-      if (socket.readyState === socket.CONNECTED) {
-        socket.send(JSON.stringify({ action: "join-room", room: doc.id }));
+
+      if (socket.readyState === socket.OPEN && doc) {
+        socket.send(JSON.stringify({ action: "join-room", room: doc }));
       }
 
-      setRoomName(doc.id);
+      setRoomName(doc);
+    };
+
+    window.onCurrentDocumentChanged = doc => {
+      setRoomName(doc);
     };
 
     function appendMessage(messages, messageData, sender = false) {
       // silent on error
       try {
-        const data = JSON.parse(messageData.message);
-
         const newMessage = {
           id: messageData.id,
           user: messageData.user,
           room: messageData.room,
-          message: data
+          message: messageData
         };
 
         setMessages(messages.concat(newMessage));
@@ -247,44 +272,60 @@ const init = (SERVER_URL = DEFAULT_SERVER_URL, CLOUD_USER = undefined) => {
     }
 
     React.useEffect(() => {
-      socket.onmessage = ({ data }) => {
+      const listener = ({ data }) => {
         console.log(data);
         const parsed = JSON.parse(data);
-        if (parsed.type === "message") {
+
+        if (parsed.action === "message") {
           appendMessage(messages, parsed);
         }
       };
+      socket.addEventListener("message", listener);
 
       // scroll to bottom
       scrollToBottom();
 
       return () => {
-        socket.onmessage = undefined;
+        socket.removeEventListener("message", listener);
       };
     }, [messages]);
 
     React.useEffect(() => {
+      if (roomsToConnectTo.length) {
+        setRoomName(roomsToConnectTo[roomsToConnectTo.length - 1]);
+      }
+
       setConnection(ConnectionEnum.CONNECTING);
 
       // scroll to bottom
       scrollToBottom();
+
+      return () => {
+        socket.terminate();
+      };
     }, []);
 
     React.useEffect(() => {
-      socket.onopen = () => {
-        roomsToConnectTo.forEach(doc =>
-          socket.send(JSON.stringify({ action: "join-room", room: doc.id }))
-        );
+      const openListener = () => {
+        roomsToConnectTo
+          .filter(x => x)
+          .forEach(doc =>
+            socket.send(JSON.stringify({ action: "join-room", room: doc }))
+          );
         setConnection(ConnectionEnum.CONNECTED);
       };
-      socket.onerror = err => {
+      socket.addEventListener("open", openListener);
+      const errorListener = err => {
         console.error(err);
         setConnection(ConnectionEnum.ERROR);
       };
+      socket.addEventListener("error", errorListener);
+      socket.addEventListener("close", errorListener);
 
       return () => {
-        socket.onopen = undefined;
-        socket.onerror = undefined;
+        socket.removeEventListener("open", openListener);
+        socket.removeEventListener("error", errorListener);
+        socket.removeEventListener("close", errorListener);
       };
     }, [connection]);
 
