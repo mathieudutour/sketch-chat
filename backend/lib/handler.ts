@@ -1,5 +1,5 @@
 import { Server } from 'ws'
-import { URL } from 'url'
+import querystring from 'querystring'
 import express from 'express'
 import randomString from 'randomstring'
 import { removeUser, getUser, getRoom, addUserToRoom } from './storage'
@@ -16,9 +16,11 @@ console.log('websocket server created')
 
 wss.on('connection', async (ws, req) => {
   const connectionID = randomString.generate()
-  const query = new URL(req.url).searchParams
-  const name = query.get('name')
-  const avatar = query.get('avatar')
+  const { name, avatar } = querystring.parse(req.url.replace(/^\/\?/, ''))
+
+  if (Array.isArray(name) || Array.isArray(avatar)) {
+    return
+  }
 
   getUser({ connectionID, ws, name, avatar })
 
