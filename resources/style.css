@@ -38,6 +38,15 @@ body,
   flex-direction: column;
 }
 
+.__skpm-light {
+  background: #fff;
+  color: #000;
+}
+
+.__skpm-light span {
+  color: #000;
+}
+
 .__skpm-dark {
   background: #000;
   color: #fff;
@@ -259,11 +268,17 @@ body {
 .icon--play {
   background-image: url(data:image/svg+xml;utf8,%3Csvg%20fill%3D%22none%22%20height%3D%2296%22%20viewBox%3D%220%200%2032%2096%22%20width%3D%2232%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20clip-rule%3D%22evenodd%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22m13%2010.0979.765.4781%208%205%20.6784.424-.6784.424-8%205-.765.4781v-.9021-10zm1%201.8042v8.1958l6.5566-4.0979z%22%20fill%3D%22%23000%22%20fill-opacity%3D%22.8%22%2F%3E%3Cpath%20d%3D%22m13%2042.0979.765.4781%208%205%20.6784.424-.6784.424-8%205-.765.4781v-.9021-10zm1%201.8042v8.1958l6.5566-4.0979z%22%20fill%3D%22%23000%22%20fill-opacity%3D%22.3%22%2F%3E%3Cpath%20d%3D%22m13%2074.0979.765.4781%208%205%20.6784.424-.6784.424-8%205-.765.4781v-.9021-10zm1%201.8042v8.1958l6.5566-4.0979z%22%20fill%3D%22%2318a0fb%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E);
 }
+.icon--close {
+  background-image: url(data:image/svg+xml;utf8,%3Csvg%20fill%3D%22none%22%20height%3D%2296%22%20viewBox%3D%220%200%2032%2096%22%20width%3D%2232%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20clip-rule%3D%22evenodd%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22m16%2015.293%204.6465-4.6464.7071.7071-4.6465%204.6464%204.6465%204.6465-.7071.7071-4.6465-4.6464-4.6464%204.6464-.7071-.7071%204.6464-4.6465-4.6464-4.6463.7071-.7071z%22%20fill%3D%22%23000%22%20fill-opacity%3D%22.8%22%2F%3E%3Cpath%20d%3D%22m16%2047.293%204.6465-4.6464.7071.7071-4.6465%204.6464%204.6465%204.6465-.7071.7071-4.6465-4.6464-4.6464%204.6464-.7071-.7071%204.6464-4.6465-4.6464-4.6463.7071-.7071z%22%20fill%3D%22%23000%22%20fill-opacity%3D%22.3%22%2F%3E%3Cpath%20d%3D%22m16%2079.293%204.6465-4.6464.7071.7071-4.6465%204.6464%204.6465%204.6465-.7071.7071-4.6465-4.6464-4.6464%204.6464-.7071-.7071%204.6464-4.6465-4.6464-4.6463.7071-.7071z%22%20fill%3D%22%2318a0fb%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E);
+}
 .__skpm-dark .icon--adjust {
   background-image: url(data:image/svg+xml;utf8,%3Csvg%20fill%3D%22none%22%20height%3D%2296%22%20viewBox%3D%220%200%2032%2096%22%20width%3D%2232%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20clip-rule%3D%22evenodd%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22m12%2016.05v-7.05h1v7.05c1.1411.2316%202%201.2405%202%202.45s-.8589%202.2184-2%202.45v2.05h-1v-2.05c-1.1411-.2316-2-1.2405-2-2.45s.8589-2.2184%202-2.45zm2%202.45c0%20.8284-.6716%201.5-1.5%201.5s-1.5-.6716-1.5-1.5.6716-1.5%201.5-1.5%201.5.6716%201.5%201.5zm5%204.5h1v-7.05c1.1411-.2316%202-1.2405%202-2.45s-.8589-2.2184-2-2.45v-2.05h-1v2.05c-1.1411.2316-2%201.2405-2%202.45s.8589%202.2184%202%202.45zm2-9.5c0-.8284-.6716-1.5-1.5-1.5s-1.5.6716-1.5%201.5.6716%201.5%201.5%201.5%201.5-.6716%201.5-1.5z%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.8%22%2F%3E%3Cpath%20d%3D%22m12%2048.05v-7.05h1v7.05c1.1411.2316%202%201.2405%202%202.45s-.8589%202.2184-2%202.45v2.05h-1v-2.05c-1.1411-.2316-2-1.2405-2-2.45s.8589-2.2184%202-2.45zm2%202.45c0%20.8284-.6716%201.5-1.5%201.5s-1.5-.6716-1.5-1.5.6716-1.5%201.5-1.5%201.5.6716%201.5%201.5zm5%204.5h1v-7.05c1.1411-.2316%202-1.2405%202-2.45s-.8589-2.2184-2-2.45v-2.05h-1v2.05c-1.1411.2316-2%201.2405-2%202.45s.8589%202.2184%202%202.45zm2-9.5c0-.8284-.6716-1.5-1.5-1.5s-1.5.6716-1.5%201.5.6716%201.5%201.5%201.5%201.5-.6716%201.5-1.5z%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.3%22%2F%3E%3Cpath%20d%3D%22m12%2080.05v-7.05h1v7.05c1.1411.2316%202%201.2405%202%202.45s-.8589%202.2184-2%202.45v2.05h-1v-2.05c-1.1411-.2316-2-1.2405-2-2.45s.8589-2.2184%202-2.45zm2%202.45c0%20.8284-.6716%201.5-1.5%201.5s-1.5-.6716-1.5-1.5.6716-1.5%201.5-1.5%201.5.6716%201.5%201.5zm5%204.5h1v-7.05c1.1411-.2316%202-1.2405%202-2.45s-.8589-2.2184-2-2.45v-2.05h-1v2.05c-1.1411.2316-2%201.2405-2%202.45s.8589%202.2184%202%202.45zm2-9.5c0-.8284-.6716-1.5-1.5-1.5s-1.5.6716-1.5%201.5.6716%201.5%201.5%201.5%201.5-.6716%201.5-1.5z%22%20fill%3D%22%2318a0fb%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E);
 }
 .__skpm-dark .icon--play {
   background-image: url(data:image/svg+xml;utf8,%3Csvg%20fill%3D%22none%22%20height%3D%2296%22%20viewBox%3D%220%200%2032%2096%22%20width%3D%2232%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20clip-rule%3D%22evenodd%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22m13%2010.0979.765.4781%208%205%20.6784.424-.6784.424-8%205-.765.4781v-.9021-10zm1%201.8042v8.1958l6.5566-4.0979z%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.8%22%2F%3E%3Cpath%20d%3D%22m13%2042.0979.765.4781%208%205%20.6784.424-.6784.424-8%205-.765.4781v-.9021-10zm1%201.8042v8.1958l6.5566-4.0979z%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.3%22%2F%3E%3Cpath%20d%3D%22m13%2074.0979.765.4781%208%205%20.6784.424-.6784.424-8%205-.765.4781v-.9021-10zm1%201.8042v8.1958l6.5566-4.0979z%22%20fill%3D%22%2318a0fb%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E);
+}
+.__skpm-dark .icon--close {
+  background-image: url(data:image/svg+xml;utf8,%3Csvg%20fill%3D%22none%22%20height%3D%2296%22%20viewBox%3D%220%200%2032%2096%22%20width%3D%2232%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20clip-rule%3D%22evenodd%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22m16%2015.293%204.6465-4.6464.7071.7071-4.6465%204.6464%204.6465%204.6465-.7071.7071-4.6465-4.6464-4.6464%204.6464-.7071-.7071%204.6464-4.6465-4.6464-4.6463.7071-.7071z%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.8%22%2F%3E%3Cpath%20d%3D%22m16%2047.293%204.6465-4.6464.7071.7071-4.6465%204.6464%204.6465%204.6465-.7071.7071-4.6465-4.6464-4.6464%204.6464-.7071-.7071%204.6464-4.6465-4.6464-4.6463.7071-.7071z%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.3%22%2F%3E%3Cpath%20d%3D%22m16%2079.293%204.6465-4.6464.7071.7071-4.6465%204.6464%204.6465%204.6465-.7071.7071-4.6465-4.6464-4.6464%204.6464-.7071-.7071%204.6464-4.6465-4.6464-4.6463.7071-.7071z%22%20fill%3D%22%2318a0fb%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E);
 }
 
 .main {
@@ -321,37 +336,42 @@ body {
 .messages {
   margin: 0;
   overflow: auto;
-  padding: 15px 15px 0;
+  padding: 0 12px;
 }
 
 .messages .message {
-  background-color: #18a0fb;
-  border-radius: 15px;
-  color: #fff;
+  color: #000;
   font-style: normal;
   font-weight: 600;
   font-size: 12px;
   line-height: 16px;
-  padding: 12px 15px;
-  margin: 0 30% 15px 0;
+  padding: 0 0 0 32px;
+  margin: 2px 0 0;
   word-break: break-word;
-}
-
-.messages .message.me {
-  color: #000;
-  margin: 0 0 15px 30%;
-  background-color: #ebebeb;
-}
-.__skpm-dark .messages .message.me {
-  color: #fff;
-  margin: 0 0 15px 30%;
-  background-color: #151515;
+  position: relative;
 }
 
 .messages .message .user {
   font-size: 9px;
-  margin-bottom: 5px;
-  color: #fff;
+  margin-top: 10px;
+  color: #000;
+}
+
+.messages .message .avatar {
+  width: 32px;
+  height: 32px;
+  position: absolute;
+  left: -5px;
+}
+
+.messages .message .avatar img {
+  width: 100%;
+  height: 100%;
+}
+
+.messages .message .timestamp {
+  padding-left: 5px;
+  opacity: 0.5;
 }
 
 .messages .message .selection {
@@ -359,36 +379,33 @@ body {
   cursor: pointer;
   width: 100%;
   background-color: transparent;
-  border-color: #fff;
-  color: #fff;
-}
-
-.messages .message.me .user {
-  color: #000;
-}
-.__skpm-dark .messages .message.me .user {
-  color: #fff;
-}
-
-.messages .message.me .selection {
   border-color: #000;
   color: #000;
 }
-.__skpm-dark .messages .message.me .selection {
+
+.__skpm-dark .messages .message .user {
+  color: #fff;
+}
+
+.__skpm-dark .messages .message .selection {
   border-color: #fff;
   color: #fff;
 }
 
 .chat .footer {
+  border-top: 1px solid #e9e9e9;
+}
+.__skpm-dark .chat .footer {
+  border-top: 1px solid #171717;
+}
+
+.chat .footer .footer-input {
   display: grid;
   grid-template-columns: 1fr 32px;
   grid-gap: 10px;
   margin: 0;
   padding: 15px;
-  border-top: 1px solid #e9e9e9;
-}
-.__skpm-dark .chat .footer {
-  border-top: 1px solid #171717;
+  padding-top: 5px;
 }
 
 .chat .footer button {
@@ -478,4 +495,78 @@ body {
 }
 .connection div {
   align-self: center;
+}
+
+.checkbox {
+  display: flex;
+  flex-direction: row;
+  height: 28px;
+  cursor: default;
+  margin-left: 6px;
+}
+
+.checkbox .checkbox-input {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 12px;
+  height: 12px;
+  border: 1px solid #777;
+  border-radius: 2px;
+  background-color: #fff;
+}
+
+.__skpm-dark .checkbox .checkbox-input {
+  border: 1px solid #777;
+  background-color: #000;
+}
+
+.checkbox .checkbox-input input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
+.checkbox .checkbox-input input:checked ~ span {
+  border: 1px solid #18a0fb;
+  background-color: #18a0fb;
+}
+.checkbox .checkbox-input input:checked ~ span:after {
+  display: block;
+}
+
+.checkbox label {
+  display: flex;
+  align-items: center;
+  padding-top: 4px;
+  padding-left: 30px;
+  color: #777;
+}
+
+.checkbox .checkbox-input span {
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 12px;
+  height: 12px;
+  border: 1px solid #777;
+  border-radius: 2px;
+  background-color: #fff;
+}
+
+.__skpm-dark .checkbox .checkbox-input span {
+  border: 1px solid #777;
+  background-color: #000;
+}
+
+.checkbox .checkbox-input span:after {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  content: "";
+  display: none;
+  background-image: url("data:image/svg+xml;utf8,%3Csvg%20fill%3D%22none%22%20height%3D%227%22%20viewBox%3D%220%200%208%207%22%20width%3D%228%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20clip-rule%3D%22evenodd%22%20d%3D%22m1.17647%201.88236%201.88235%201.88236%203.76471-3.76472%201.17647%201.17648-4.94118%204.9412-3.05882-3.05884z%22%20fill%3D%22%23fff%22%20fill-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: 1px 2px;
 }

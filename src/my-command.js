@@ -64,14 +64,15 @@ function cloudUser() {
 export function onStartup() {
   const options = {
     identifier: webviewIdentifier,
-    width: 240,
-    height: 180,
+    width: 300,
+    height: 500,
     minimizable: false,
     maximizable: false,
     hidesOnDeactivate: false,
     acceptFirstMouse: true,
     remembersWindowFrame: true,
-    show: false
+    show: false,
+    frame: false
   };
 
   const browserWindow = new BrowserWindow(options);
@@ -87,40 +88,11 @@ export function onStartup() {
     MSCloudAction.signIn();
   });
 
+  browserWindow.webContents.on("close-window", () => {
+    browserWindow.hide();
+  });
+
   const threadDic = NSThread.mainThread().threadDictionary();
-
-  browserWindow.webContents.executeJavaScript(
-    `document.body.classList.add("__skpm-${
-      typeof MSTheme !== "undefined" && MSTheme.sharedTheme().isDark()
-        ? "dark"
-        : "light"
-    }")`
-  );
-
-  const observer = new MochaJSDelegate({
-    "observeValueForKeyPath:ofObject:change:context:": () => {
-      browserWindow.webContents.executeJavaScript(
-        `document.body.classList.remove("__skpm-${
-          typeof MSTheme !== "undefined" && MSTheme.sharedTheme().isDark()
-            ? "light"
-            : "dark"
-        }"); document.body.classList.add("__skpm-${
-          typeof MSTheme !== "undefined" && MSTheme.sharedTheme().isDark()
-            ? "dark"
-            : "light"
-        }")`
-      );
-    }
-  }).getClassInstance();
-
-  NSApplication.sharedApplication().addObserver_forKeyPath_options_context(
-    observer,
-    "effectiveAppearance",
-    NSKeyValueChangeNewKey,
-    null
-  );
-
-  threadDic["sketch-chat.onThemeChanged"] = observer;
 
   const user = cloudUser();
   browserWindow.webContents.insertJS(
@@ -210,14 +182,5 @@ export function onShutdown() {
   if (delegate) {
     NSNotificationCenter.defaultCenter().removeObserver(delegate);
     threadDic.removeObjectForKey("sketch-chat.onCloudUserChanged");
-  }
-
-  const observer = threadDic["sketch-chat.onThemeChanged"];
-  if (observer) {
-    NSApplication.sharedApplication().removeObserver_forKeyPath(
-      observer,
-      "effectiveAppearance"
-    );
-    threadDic.removeObjectForKey("sketch-chat.onThemeChanged");
   }
 }

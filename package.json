@@ -39,7 +39,7 @@
     "randomstring": "^1.1.5",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
-    "sketch-module-web-view": "^3.1.4",
+    "sketch-module-web-view": "^3.3.1",
     "socket.io-client": "^2.3.0"
   },
   "author": "Mathieu Dutour <mathieu@dutour.me>",

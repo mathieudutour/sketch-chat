@@ -2,7 +2,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as randomstring from "randomstring";
 
-const DEFAULT_SERVER_URL = "ws://sketch-chat.herokuapp.com/";
+const DEFAULT_SERVER_URL = "wss://sketch-chat.herokuapp.com/";
 
 const ConnectionEnum = {
   NONE: "NONE",
@@ -32,16 +32,30 @@ const SelectionStateEnum = {
 //   avatar?: string;
 // }
 
-function Message({ data, me }) {
+function Message({ data, previous }) {
   const username = data.user.name || "";
-  const isSender = data.user.name === me.name;
-
+  console.log(data);
   try {
     const message = data.message;
+    const date = new Date(data.timestamp);
 
     return (
-      <div className={`message ${isSender ? "me" : "blue"}`}>
-        {!isSender ? <div className="user">{username}</div> : ""}
+      <div className="message">
+        {!previous || previous.user.name !== username ? (
+          <React.Fragment>
+            <div className="avatar">
+              <img src={data.user.avatar} />
+            </div>
+            <div className="user">
+              {username}{" "}
+              <span className="timestamp">
+                {date.getHours() % 12}:{date.getMinutes() < 10 ? "0" : ""}
+                {date.getMinutes()} {date.getHours() >= 12 ? "PM" : "AM"}
+              </span>
+            </div>
+          </React.Fragment>
+        ) : null}
+
         {message.selection ? (
           <span
             onClick={() =>
@@ -183,6 +197,7 @@ const init = (SERVER_URL = DEFAULT_SERVER_URL, CLOUD_USER = undefined) => {
     const [textMessage, setTextMessage] = React.useState("");
 
     const [messages, setMessages] = React.useState([]);
+    const [includeSelection, setIncludeSelection] = React.useState(false);
     const [selection, setSelection] = React.useState([]);
 
     const messagesEndRef = React.useRef(null);
@@ -230,6 +245,7 @@ const init = (SERVER_URL = DEFAULT_SERVER_URL, CLOUD_USER = undefined) => {
         );
 
         setTextMessage("");
+        setIncludeSelection(false);
       }
     }
 
@@ -255,7 +271,8 @@ const init = (SERVER_URL = DEFAULT_SERVER_URL, CLOUD_USER = undefined) => {
           id: messageData.id,
           user: messageData.user,
           room: messageData.room,
-          message: messageData
+          message: messageData,
+          timestamp: Date.now()
         };
 
         setMessages(messages.concat(newMessage));
@@ -301,7 +318,7 @@ const init = (SERVER_URL = DEFAULT_SERVER_URL, CLOUD_USER = undefined) => {
       scrollToBottom();
 
       return () => {
-        socket.terminate();
+        socket.close();
       };
     }, []);
 
@@ -408,40 +425,62 @@ const init = (SERVER_URL = DEFAULT_SERVER_URL, CLOUD_USER = undefined) => {
             <div className="onboarding-tip">
               <div
                 className="onboarding-tip__icon"
+                onClick={() => window.postMessage("close-window")}
+              >
+                <div className="icon icon--close icon--button" />
+              </div>
+              <div className="onboarding-tip__msg" data-app-region="drag">
+                <span
+                  style={{
+                    marginLeft: 0,
+                    userSelect: "none"
+                  }}
+                >
+                  Chat
+                </span>
+              </div>
+              <div
+                className="onboarding-tip__icon"
                 onClick={() => setSettingsView(true)}
               >
                 <div className="icon icon--adjust icon--button" />
-              </div>
-              <div className="onboarding-tip__msg">
-                <span
-                  style={{
-                    marginLeft: 0
-                  }}
-                >
-                  {CLOUD_USER.name && <strong>{CLOUD_USER.name}</strong>}
-                </span>
               </div>
             </div>
           </div>
           <div className="messages" ref={messagesEndRef}>
             {messages
               .filter(m => m.room === roomName)
-              .map(m => (
-                <Message key={m.id} data={m} me={CLOUD_USER} />
+              .map((m, i, a) => (
+                <Message key={m.id} data={m} previous={a[i - 1]} />
               ))}
           </div>
           <form className="footer" onSubmit={e => sendMessage(e)}>
-            <input
-              type="input"
-              className="input"
-              value={textMessage}
-              onChange={e => setTextMessage(e.target.value.substr(0, 1000))}
-              placeholder="Write something..."
-            />
+            <div>
+              <label className="checkbox">
+                <div className="checkbox-input">
+                  <input
+                    type="checkbox"
+                    checked={includeSelection}
+                    onChange={e => setIncludeSelection(!includeSelection)}
+                  />
+                  <span />
+                </div>
+                <label>Include Selection</label>
+              </label>
+            </div>
+            <div className="footer-input">
+              <input
+                type="input"
+                className="input"
+                value={textMessage}
+                onChange={e => setTextMessage(e.target.value.substr(0, 1000))}
+                placeholder="Write something..."
+              />
 
-            <button type="submit">
-              <div className="icon icon--play icon--button" />
-            </button>
+              <button type="submit">
+                <div className="icon icon--play icon--button" />
+              </button>
+            </div>
           </form>
         </div>
       </div>

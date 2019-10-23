@@ -6,5 +6,6 @@ export const sendMessage = (connectionID: string, message: any) => {
   if (!user.ws) {
     return
   }
+  message.timestamp = Date.now()
   user.ws.send(JSON.stringify(message))
 }
