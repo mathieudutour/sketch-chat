@@ -56,23 +56,28 @@ function Message({ data, previous }) {
           </React.Fragment>
         ) : null}
 
-        {message.selection ? (
-          <span
+        {message.selection && message.selection.length ? (
+          <div
             onClick={() =>
               // @ts-ignore
-              window.postMessage("focus-nodes", {
-                ids: message.selection
-              })
+              window.postMessage("select-layers", message.selection)
             }
+            className="selection-preview"
           >
-            {message.text}
-            <button className="selection button button--secondary">
+            <button
+              className="selection button button--secondary"
+              onClick={() =>
+                // @ts-ignore
+                window.postMessage("select-layers", message.selection)
+              }
+            >
               attached elements
             </button>
-          </span>
-        ) : (
+          </div>
+        ) : null}
+        <div>
           <span>{message.text}</span>
-        )}
+        </div>
       </div>
     );
   } catch (err) {
@@ -191,13 +196,12 @@ const init = (SERVER_URL = DEFAULT_SERVER_URL, CLOUD_USER = undefined) => {
     const [selectionStatus, setSelectionStatus] = React.useState(
       SelectionStateEnum.NONE
     ); // READY, NONE, LOADING
-
     const [connection, setConnection] = React.useState(ConnectionEnum.NONE); // CONNECTED, ERROR, CONNECTING
-    const [roomName, setRoomName] = React.useState("");
-    const [textMessage, setTextMessage] = React.useState("");
 
     const [messages, setMessages] = React.useState([]);
     const [includeSelection, setIncludeSelection] = React.useState(false);
+    const [roomName, setRoomName] = React.useState("");
+    const [textMessage, setTextMessage] = React.useState("");
     const [selection, setSelection] = React.useState([]);
 
     const messagesEndRef = React.useRef(null);
@@ -260,8 +264,32 @@ const init = (SERVER_URL = DEFAULT_SERVER_URL, CLOUD_USER = undefined) => {
       setRoomName(doc);
     };
 
+    // @ts-ignore
+    window.onCloseDocument = doc => {
+      roomsToConnectTo = roomsToConnectTo.fitler(x => x !== doc);
+
+      if (socket.readyState === socket.OPEN && doc) {
+        socket.send(JSON.stringify({ action: "leave-room", room: doc }));
+      }
+
+      if (roomName === doc) {
+        setRoomName("");
+      }
+    };
+
+    // @ts-ignore
     window.onCurrentDocumentChanged = doc => {
       setRoomName(doc);
+    };
+
+    window.onSelectionChanged = sel => {
+      if (!sel || !sel.length) {
+        setSelectionStatus(SelectionStateEnum.NONE);
+      } else {
+        setSelectionStatus(SelectionStateEnum.READY);
+      }
+
+      setSelection(sel);
     };
 
     function appendMessage(messages, messageData, sender = false) {

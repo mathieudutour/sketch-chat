@@ -40,6 +40,34 @@ export function onOpenDocument() {
   }, 100);
 }
 
+export function onCloseDocument(context) {
+  if (
+    context.actionContext.document &&
+    context.actionContext.document.cloudShare() &&
+    context.actionContext.document.cloudShare().shortID()
+  ) {
+    sendToWebview(
+      context.actionContext.document,
+      `onCloseDocument("${String(
+        context.actionContext.document.cloudShare().shortID()
+      )}")`
+    );
+  }
+
+  onOpenDocument();
+}
+
+export const onSelectionChanged = context => {
+  const selection = [];
+  for (let i = 0; i < context.actionContext.newSelection.length; i++) {
+    selection.push(String(context.actionContext.newSelection[i].objectID()));
+  }
+  sendToWebview(
+    webviewIdentifier,
+    `onSelectionChanged(${JSON.stringify(selection)})`
+  );
+};
+
 function cloudUser() {
   let user = undefined;
   if (MSCloudAction.userController().user()) {
@@ -92,6 +120,22 @@ export function onStartup() {
     browserWindow.hide();
   });
 
+  browserWindow.webContents.on("select-layers", layerIds => {
+    const document = getSelectedDocument();
+    const layers = layerIds
+      .map(layerId => document.getLayerWithID(layerId))
+      .filter(x => !!x);
+    if (!layers.length) {
+      return;
+    }
+    document.selectedPage = layers[0].getParentPage();
+    document.selectedLayers.layers = layers;
+    document.sketchObject
+      .eventHandlerManager()
+      .currentHandler()
+      .zoomToSelection();
+  });
+
   const threadDic = NSThread.mainThread().threadDictionary();
 
   const user = cloudUser();
@@ -117,7 +161,6 @@ export function onStartup() {
     },
     "onCloudUserChanged:": () => {
       const user = cloudUser();
-      console.log(user);
       browserWindow.webContents.insertJS(
         `window.CLOUD_USER = ${JSON.stringify(user)}`
       );
