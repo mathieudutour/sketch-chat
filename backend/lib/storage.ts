@@ -92,6 +92,27 @@ export const addUserToRoom = (user: User, room: string) => {
   return existingRoom
 }
 
+export const removeUserFromRoom = (user: User, room: string) => {
+  if (!room) {
+    return
+  }
+
+  const existingRoom = getRoom(room)
+  const existingUser = getUser(user)
+
+  const users = new Set(existingRoom.users)
+  users.delete(user.connectionID)
+  existingRoom.users = Array.from(users)
+  const rooms = new Set(existingUser.rooms)
+  rooms.delete(room)
+  existingUser.rooms = Array.from(rooms)
+
+  cache.rooms[room] = existingRoom
+  cache.users[user.connectionID] = existingUser
+
+  return existingRoom
+}
+
 export const removeUser = (connectionID: string) => {
   const existingUser = getUser({ connectionID })
 

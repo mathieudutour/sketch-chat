@@ -9,6 +9,7 @@ import {
   addUserToRoom,
   userIsAlive,
   getUserByWs,
+  removeUserFromRoom,
 } from './storage'
 import { sendMessage } from './sent-message'
 
@@ -38,6 +39,22 @@ wss.on('connection', async (ws, req) => {
   ws.on('message', data => {
     const user = getUser({ connectionID })
     const body = JSON.parse(String(data) || '{}')
+
+    if (body.action === 'leave-room') {
+      const room = removeUserFromRoom(user, body.room)
+
+      room.users
+        .filter(x => x !== connectionID)
+        .forEach(x =>
+          sendMessage(x, {
+            type: 'user-left',
+            room: body.room,
+            user: { name: user.name, avatar: user.avatar },
+          })
+        )
+
+      return
+    }
 
     if (body.action === 'join-room') {
       const room = addUserToRoom(user, body.room)
