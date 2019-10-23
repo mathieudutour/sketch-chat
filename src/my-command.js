@@ -97,7 +97,7 @@ export function onStartup() {
     minimizable: false,
     maximizable: false,
     hidesOnDeactivate: false,
-    acceptFirstMouse: true,
+    acceptsFirstMouse: true,
     remembersWindowFrame: true,
     show: false,
     frame: false

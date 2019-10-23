@@ -69,6 +69,13 @@ wss.on('connection', async (ws, req) => {
           })
         )
 
+      sendMessage(connectionID, {
+        type: 'joined-room',
+        room: body.room,
+        users: room.users.length - 1,
+        user: { name: user.name, avatar: user.avatar },
+      })
+
       return
     }
 

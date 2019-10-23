@@ -33,8 +33,15 @@ const SelectionStateEnum = {
 // }
 
 function Message({ data, previous }) {
+  if (data.action === "joined-room") {
+    return (
+      <div className="message metadata">
+        Joining {data.users} others in the this room.
+      </div>
+    );
+  }
+
   const username = data.user.name || "";
-  console.log(data);
   try {
     const message = data.message;
     const date = new Date(data.timestamp);
@@ -56,7 +63,7 @@ function Message({ data, previous }) {
           </React.Fragment>
         ) : null}
 
-        {message.selection && message.selection.length ? (
+        {message && message.selection && message.selection.length ? (
           <div
             onClick={() =>
               // @ts-ignore
@@ -64,19 +71,21 @@ function Message({ data, previous }) {
             }
             className="selection-preview"
           >
-            <button
-              className="selection button button--secondary"
-              onClick={() =>
-                // @ts-ignore
-                window.postMessage("select-layers", message.selection)
-              }
-            >
+            <button className="selection button button--secondary">
               attached elements
             </button>
           </div>
         ) : null}
         <div>
-          <span>{message.text}</span>
+          <span>
+            {message ? (
+              message.text
+            ) : (
+              <span className="metadata">
+                {data.action === "user-join" ? "Joined" : "Left"} the room.
+              </span>
+            )}
+          </span>
         </div>
       </div>
     );
@@ -322,6 +331,14 @@ const init = (SERVER_URL = DEFAULT_SERVER_URL, CLOUD_USER = undefined) => {
         const parsed = JSON.parse(data);
 
         if (parsed.action === "message") {
+          appendMessage(messages, parsed);
+        }
+        if (parsed.action === "joined-room") {
+          parsed.id = randomstring.generate();
+          appendMessage(messages, parsed);
+        }
+        if (parsed.action === "user-left" || parsed.action === "user-join") {
+          parsed.id = randomstring.generate();
           appendMessage(messages, parsed);
         }
       };
