@@ -32,6 +32,39 @@ const SelectionStateEnum = {
 //   avatar?: string;
 // }
 
+const CACHE = {};
+
+function Preview({ room, id }) {
+  const [src, setSrc] = React.useState(CACHE[room] && CACHE[room][id]);
+
+  React.useEffect(() => {
+    if (!src) {
+      window.postMessage("get-preview", id).then(([res]) => {
+        if (res) {
+          if (!CACHE[room]) {
+            CACHE[room] = {};
+          }
+          CACHE[room][id] = res;
+        }
+
+        setSrc(res);
+      });
+    }
+  }, []);
+
+  return (
+    <div
+      className="preview"
+      onClick={() =>
+        // @ts-ignore
+        window.postMessage("select-layer", id)
+      }
+    >
+      {src ? <img src={src} /> : "Loading..."}
+    </div>
+  );
+}
+
 function Message({ data, previous }) {
   if (data.action === "joined-room") {
     return (
@@ -64,16 +97,10 @@ function Message({ data, previous }) {
         ) : null}
 
         {message && message.selection && message.selection.length ? (
-          <div
-            onClick={() =>
-              // @ts-ignore
-              window.postMessage("select-layers", message.selection)
-            }
-            className="selection-preview"
-          >
-            <button className="selection button button--secondary">
-              attached elements
-            </button>
+          <div className="selection-previews">
+            {message.selection.map(id => (
+              <Preview key={id} id={id} room={data.room} />
+            ))}
           </div>
         ) : null}
         <div>

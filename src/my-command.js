@@ -1,6 +1,6 @@
 import BrowserWindow from "sketch-module-web-view";
 import { getWebview, sendToWebview } from "sketch-module-web-view/remote";
-import { getSelectedDocument } from "sketch/dom";
+import { getSelectedDocument, export as exportLayer } from "sketch/dom";
 import MochaJSDelegate from "mocha-js-delegate";
 
 const webviewIdentifier = "sketch-chat.webview";
@@ -120,16 +120,26 @@ export function onStartup() {
     browserWindow.hide();
   });
 
-  browserWindow.webContents.on("select-layers", layerIds => {
+  browserWindow.webContents.on("get-preview", layerId => {
     const document = getSelectedDocument();
-    const layers = layerIds
-      .map(layerId => document.getLayerWithID(layerId))
-      .filter(x => !!x);
-    if (!layers.length) {
+    const layer = document.getLayerWithID(layerId);
+
+    if (!layer) {
+      return null;
+    }
+
+    const buffer = exportLayer(layer, { formats: "png", output: false });
+    return "data:image/png;base64," + buffer.toString("base64");
+  });
+
+  browserWindow.webContents.on("select-layer", layerId => {
+    const document = getSelectedDocument();
+    const layer = document.getLayerWithID(layerId);
+    if (!layer) {
       return;
     }
-    document.selectedPage = layers[0].getParentPage();
-    document.selectedLayers.layers = layers;
+    document.selectedPage = layer.getParentPage();
+    document.selectedLayers.layers = [layer];
     document.sketchObject
       .eventHandlerManager()
       .currentHandler()
