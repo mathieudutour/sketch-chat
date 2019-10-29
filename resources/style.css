@@ -362,6 +362,7 @@ body {
   height: 32px;
   position: absolute;
   left: -5px;
+  border-radius: 16px;
 }
 
 .messages .message .avatar img {
@@ -576,6 +577,10 @@ body {
   border-radius: 8px;
   overflow: hidden;
   margin-bottom: 5px;
+}
+
+.__skpm-dark .selection-previews .preview {
+  border: 1px solid black;
 }
 
 .selection-previews .preview + .preview {
