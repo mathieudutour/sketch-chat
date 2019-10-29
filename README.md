@@ -2,6 +2,8 @@
 
 _A Sketch plugin to chat in Sketch Cloud files._
 
+[![demo](./sketch-assets/Sketch-Chat.gif)](https://twitter.com/MathieuDutour/status/1189219751869988867)
+
 ## Installation
 
 - [Download](../../releases/latest/download/sketch-chat.sketchplugin.zip) the latest release of the plugin
