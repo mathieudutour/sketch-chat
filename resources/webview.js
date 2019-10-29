@@ -265,7 +265,7 @@ const init = (SERVER_URL = DEFAULT_SERVER_URL, CLOUD_USER = undefined) => {
           id: randomstring.generate()
         };
 
-        if (selectionStatus === SelectionStateEnum.READY) {
+        if (selectionStatus === SelectionStateEnum.READY && includeSelection) {
           data.selection = selection;
         } else if (selectionStatus === SelectionStateEnum.NONE) {
           // nothing selected
