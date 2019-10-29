@@ -36,17 +36,10 @@ npm run watch
 
 ### Backend
 
-The backend is a serverless application deployed on AWS.
+The backend is a nodeJS application deployed automatically on Heroku.
 
 Install the dependencies
 
 ```bash
-npm i -g serverless
 cd backend && npm install
-```
-
-Once the installation is done, you can run some commands inside the project folder:
-
-```bash
-npm run deploy:dev
 ```
